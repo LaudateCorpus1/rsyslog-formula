@@ -1,7 +1,21 @@
 {% from "rsyslog/map.jinja" import rsyslog with context %}
 
+{% if rsyslog.get('latest', False) %}
+rsyslog-repo:
+  pkgrepo.managed:
+    - name: deb http://ppa.launchpad.net/adiscon/v8-stable/ubuntu trusty main
+    - keyid: 5234BF2B
+    - keyserver: keyserver.ubuntu.com
+    - require_in:
+      - pkg: rsyslog
+{% endif %}
+
 rsyslog:
+{% if rsyslog.get('latest', False) %}
+  pkg.latest:
+{% else %}
   pkg.installed:
+{% endif %}
     - name: {{ rsyslog.package }}
   file.managed:
     - name: {{ rsyslog.config }}
